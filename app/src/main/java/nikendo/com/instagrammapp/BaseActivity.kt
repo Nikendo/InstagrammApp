@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
 
-abstract class BaseActivity: AppCompatActivity() {
+abstract class BaseActivity(val navNumber: Int): AppCompatActivity() {
 
     private val TAG = "Base Activity"
 
@@ -20,24 +20,27 @@ abstract class BaseActivity: AppCompatActivity() {
         }
         bottomNavigationView.setOnNavigationItemSelectedListener {
             val nextActivity =
-                    when(it.itemId) {
-                        R.id.nav_item_home -> HomeActivity::class.java
+                    when (it.itemId) {
+                        R.id.nav_item_home -> MainActivity::class.java
                         R.id.nav_item_search -> SearchActivity::class.java
                         R.id.nav_item_share -> ShareActivity::class.java
                         R.id.nav_item_likes -> LikesActivity::class.java
                         R.id.nav_item_profile -> ProfileActivity::class.java
                         else -> {
-                            Log.d(TAG, "Unknown nav item clicked ${it.itemId}")
+                            Log.e(TAG, "unknown nav item clicked $it")
                             null
                         }
                     }
             if (nextActivity != null) {
                 val intent = Intent(this, nextActivity)
+                intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
                 startActivity(intent)
+                overridePendingTransition(0, 0)
                 true
             } else {
                 false
             }
         }
+        bottomNavigationView.menu.getItem(navNumber).isChecked = true
     }
 }

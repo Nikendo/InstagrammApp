@@ -3,7 +3,7 @@ package nikendo.com.instagrammapp
 import android.os.Bundle
 import android.util.Log
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(0) {
 
     private val TAG = "MainActivity"
 
