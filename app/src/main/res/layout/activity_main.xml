@@ -40,4 +40,15 @@
 
     </android.support.v7.widget.Toolbar>
 
+    <com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/alabaster"
+        android:elevation="40dp"
+        app:menu="@menu/bottom_navigation_menu"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+    </com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx>
+
 </android.support.constraint.ConstraintLayout>
