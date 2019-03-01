@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "442256202585",
+    "firebase_url": "https://instagrammapp-f3ee9.firebaseio.com",
+    "project_id": "instagrammapp-f3ee9",
+    "storage_bucket": "instagrammapp-f3ee9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:442256202585:android:91ab37e3e6eb7811",
+        "android_client_info": {
+          "package_name": "nikendo.com.instagrammapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "442256202585-hakllqp4fqt5nsgnnnp8rrsmk6r7j9md.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "nikendo.com.instagrammapp",
+            "certificate_hash": "ffb199a15f975079c5b0f8bc114a27a5e7f0bcb9"
+          }
+        },
+        {
+          "client_id": "442256202585-6oki867smbj3gmenh3leeckt1b2joikv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4zuJiOraYgwXsHAg1O1Z5xSZUp5A0r-A"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "442256202585-6oki867smbj3gmenh3leeckt1b2joikv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
