@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EditProfileActivity">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/editProfileToolBar"
+            style="@style/toolbar"
+            app:contentInsetStart="0dp">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/imageClose"
+                    style="@style/toolbar_image"
+                    android:src="@drawable/ic_close"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvUserName"
+                    style="@style/toolbar_title"
+                    android:text="@string/toolbar_user"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/imageClose"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/imageSave"
+                    style="@style/toolbar_image"
+                    android:src="@drawable/ic_check"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.v7.widget.Toolbar>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imageProfile"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="15dp"
+            android:src="@drawable/android_picture"
+            app:civ_border_color="@color/silver"
+            app:civ_border_width="1dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/editProfileToolBar" />
+
+        <TextView
+            android:id="@+id/tvNameLabel"
+            style="@style/edit_profile_label"
+            android:labelFor="@id/etNameInput"
+            android:text="Name"
+            app:layout_constraintTop_toBottomOf="@id/imageProfile" />
+
+        <EditText
+            android:id="@+id/etNameInput"
+            style="@style/edit_profile_input"
+            android:inputType="text"
+            app:layout_constraintTop_toBottomOf="@id/tvNameLabel" />
+
+        <TextView
+            android:id="@+id/tvUsernameLabel"
+            style="@style/edit_profile_label"
+            android:labelFor="@id/etUsernameInput"
+            android:text="Username"
+            app:layout_constraintTop_toBottomOf="@id/etNameInput" />
+
+        <EditText
+            android:id="@+id/etUsernameInput"
+            style="@style/edit_profile_input"
+            android:inputType="text"
+            app:layout_constraintTop_toBottomOf="@id/tvUsernameLabel" />
+
+        <TextView
+            android:id="@+id/tvWebsiteLabel"
+            style="@style/edit_profile_label"
+            android:labelFor="@id/etWebsiteInput"
+            android:text="Website"
+            app:layout_constraintTop_toBottomOf="@id/etUsernameInput" />
+
+        <EditText
+            android:id="@+id/etWebsiteInput"
+            style="@style/edit_profile_input"
+            android:inputType="text"
+            app:layout_constraintTop_toBottomOf="@id/tvWebsiteLabel" />
+
+        <TextView
+            android:id="@+id/tvBioLabel"
+            style="@style/edit_profile_label"
+            android:labelFor="@id/etBioInput"
+            android:text="Bio"
+            app:layout_constraintTop_toBottomOf="@id/etWebsiteInput" />
+
+        <EditText
+            android:id="@+id/etBioInput"
+            style="@style/edit_profile_input"
+            android:inputType="text"
+            app:layout_constraintTop_toBottomOf="@id/tvBioLabel" />
+
+        <TextView
+            android:id="@+id/tvPrivateInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="23dp"
+            android:layout_marginTop="20dp"
+            android:text="Private Information"
+            android:textColor="@color/black"
+            app:layout_constraintTop_toBottomOf="@id/etBioInput" />
+
+        <TextView
+            android:id="@+id/tvEmailLabel"
+            style="@style/edit_profile_label"
+            android:labelFor="@id/etEmailInput"
+            android:text="Email"
+            app:layout_constraintTop_toBottomOf="@id/tvPrivateInfo" />
+
+        <EditText
+            android:id="@+id/etEmailInput"
+            style="@style/edit_profile_input"
+            android:inputType="textEmailAddress"
+            app:layout_constraintTop_toBottomOf="@id/tvEmailLabel" />
+
+        <TextView
+            android:id="@+id/tvPhoneLabel"
+            style="@style/edit_profile_label"
+            android:labelFor="@id/etEmailInput"
+            android:text="Phone"
+            app:layout_constraintTop_toBottomOf="@id/etEmailInput" />
+
+        <EditText
+            android:id="@+id/etPhoneInput"
+            style="@style/edit_profile_input"
+            android:inputType="phone"
+            app:layout_constraintTop_toBottomOf="@id/tvPhoneLabel" />
+
+    </android.support.constraint.ConstraintLayout>
+</ScrollView>

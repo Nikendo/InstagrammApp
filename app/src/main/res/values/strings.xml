@@ -6,4 +6,5 @@
     <string name="posts_title">posts</string>
     <string name="followers_title">followers</string>
     <string name="following_title">following</string>
+    <string name="home">Home</string>
 </resources>
