@@ -3,9 +3,9 @@ package nikendo.com.instagrammapp
 import android.os.Bundle
 import android.util.Log
 
-class MainActivity : BaseActivity(0) {
+class SearchActivity: BaseActivity(1) {
 
-    private val TAG = "MainActivity"
+    private val TAG = "SearchActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -13,5 +13,6 @@ class MainActivity : BaseActivity(0) {
         Log.d(TAG, "onCreate")
         setupBottomNavigation()
     }
+
 
 }

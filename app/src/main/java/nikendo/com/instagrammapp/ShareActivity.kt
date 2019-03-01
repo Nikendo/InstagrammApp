@@ -3,15 +3,15 @@ package nikendo.com.instagrammapp
 import android.os.Bundle
 import android.util.Log
 
-class MainActivity : BaseActivity(0) {
+class ShareActivity: BaseActivity(2) {
 
-    private val TAG = "MainActivity"
+    private val TAG = "ShareActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
-        Log.d(TAG, "onCreate")
         setupBottomNavigation()
+        Log.d(TAG, "onCreate")
     }
 
 }

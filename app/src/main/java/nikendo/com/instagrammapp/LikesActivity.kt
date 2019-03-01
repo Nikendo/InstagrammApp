@@ -3,9 +3,9 @@ package nikendo.com.instagrammapp
 import android.os.Bundle
 import android.util.Log
 
-class MainActivity : BaseActivity(0) {
+class LikesActivity: BaseActivity(3) {
 
-    private val TAG = "MainActivity"
+    private val TAG = "LikesActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
