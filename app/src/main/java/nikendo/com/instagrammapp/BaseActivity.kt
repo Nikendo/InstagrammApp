@@ -3,9 +3,9 @@ package nikendo.com.instagrammapp
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import kotlinx.android.synthetic.main.activity_profile.*
+import kotlinx.android.synthetic.main.bottom_navigation_view.*
 
-abstract class BaseActivity(val navNumber: Int): AppCompatActivity() {
+abstract class BaseActivity(val navNumber: Int) : AppCompatActivity() {
 
     private val TAG = "Base Activity"
 
