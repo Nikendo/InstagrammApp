@@ -1,17 +1,20 @@
-package nikendo.com.instagrammapp
+package nikendo.com.instagrammapp.activities
 
 import android.os.Bundle
 import android.util.Log
+import nikendo.com.instagrammapp.BaseActivity
+import nikendo.com.instagrammapp.R
 
-class ShareActivity: BaseActivity(2) {
+class SearchActivity: BaseActivity(1) {
 
-    private val TAG = "ShareActivity"
+    private val TAG = "SearchActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
-        setupBottomNavigation()
         Log.d(TAG, "onCreate")
+        setupBottomNavigation()
     }
+
 
 }

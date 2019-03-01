@@ -1,4 +1,4 @@
-package nikendo.com.instagrammapp
+package nikendo.com.instagrammapp.activities
 
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_login.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
+import nikendo.com.instagrammapp.R
 
 class LoginActivity : AppCompatActivity(), KeyboardVisibilityEventListener, TextWatcher, View.OnClickListener {
 
@@ -43,7 +44,7 @@ class LoginActivity : AppCompatActivity(), KeyboardVisibilityEventListener, Text
                 }
             }
         } else {
-            Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT)
+            showToast("Please enter email and password")
         }
     }
 

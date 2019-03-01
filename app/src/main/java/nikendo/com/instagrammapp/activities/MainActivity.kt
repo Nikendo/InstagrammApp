@@ -1,10 +1,12 @@
-package nikendo.com.instagrammapp
+package nikendo.com.instagrammapp.activities
 
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_home.*
+import nikendo.com.instagrammapp.BaseActivity
+import nikendo.com.instagrammapp.R
 
 class MainActivity : BaseActivity(0) {
 
@@ -18,7 +20,6 @@ class MainActivity : BaseActivity(0) {
         setupBottomNavigation()
 
         mAuth = FirebaseAuth.getInstance()
-//        mAuth.signOut()
 //        mAuth.signInWithEmailAndPassword("pravdomir42@gmail.com", "UAZ3303Fire")
 //                .addOnCompleteListener {
 //                    if (it.isSuccessful) {
