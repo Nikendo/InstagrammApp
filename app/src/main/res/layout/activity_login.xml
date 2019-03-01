@@ -34,7 +34,7 @@
         android:id="@+id/bLogin"
         style="@style/login_btn"
         android:text="Log In"
-         app:layout_constraintTop_toBottomOf="@id/etPasswordInput" />
+        app:layout_constraintTop_toBottomOf="@id/etPasswordInput" />
 
     <TextView
         android:layout_width="match_parent"
