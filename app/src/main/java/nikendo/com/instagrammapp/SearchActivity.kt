@@ -9,7 +9,7 @@ class SearchActivity: BaseActivity(1) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_profile)
         Log.d(TAG, "onCreate")
         setupBottomNavigation()
     }

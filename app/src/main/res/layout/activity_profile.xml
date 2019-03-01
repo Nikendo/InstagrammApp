@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".MainActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/mainToolBar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/alabaster"
+        android:elevation="4dp">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvUserName"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/toolbar_user"
+                android:textColor="@color/black"
+                android:textSize="19sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:padding="10dp"
+                android:src="@drawable/ic_more"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/imageProfile"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:src="@drawable/android_picture"
+        app:civ_border_color="@color/silver"
+        app:civ_border_width="1dp"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toStartOf="@id/bEditProfile"
+        app:layout_constraintHorizontal_weight="2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mainToolBar" />
+
+    <TextView
+        android:id="@+id/tvPostsCount"
+        style="@style/profile_text_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/null_number"
+        app:layout_constraintBottom_toTopOf="@id/bEditProfile"
+        app:layout_constraintEnd_toEndOf="@id/tvPostsCountTitle"
+        app:layout_constraintStart_toStartOf="@id/tvPostsCountTitle"
+        app:layout_constraintTop_toBottomOf="@id/mainToolBar"
+        app:layout_constraintVertical_bias="0.3" />
+
+    <TextView
+        android:id="@+id/tvPostsCountTitle"
+        style="@style/profile_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/posts_title"
+        app:layout_constraintEnd_toStartOf="@id/tvFollowersCountTitle"
+        app:layout_constraintStart_toStartOf="@id/bEditProfile"
+        app:layout_constraintTop_toBottomOf="@id/tvPostsCount" />
+
+    <TextView
+        android:id="@+id/tvFollowersCount"
+        style="@style/profile_text_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/null_number"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvPostsCount"
+        app:layout_constraintEnd_toEndOf="@id/tvFollowersCountTitle"
+        app:layout_constraintStart_toStartOf="@id/tvFollowersCountTitle" />
+
+    <TextView
+        android:id="@+id/tvFollowersCountTitle"
+        style="@style/profile_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/followers_title"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvPostsCountTitle"
+        app:layout_constraintEnd_toStartOf="@id/tvFollowingCountTitle"
+        app:layout_constraintStart_toEndOf="@id/tvPostsCountTitle" />
+
+    <TextView
+        android:id="@+id/tvFollowingCount"
+        style="@style/profile_text_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/null_number"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvPostsCount"
+        app:layout_constraintEnd_toEndOf="@id/tvFollowingCountTitle"
+        app:layout_constraintStart_toStartOf="@id/tvFollowingCountTitle" />
+
+    <TextView
+        android:id="@+id/tvFollowingCountTitle"
+        style="@style/profile_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/following_title"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvPostsCountTitle"
+        app:layout_constraintEnd_toEndOf="@id/bEditProfile"
+        app:layout_constraintStart_toEndOf="@id/tvFollowersCountTitle" />
+
+    <Button
+        android:id="@+id/bEditProfile"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginEnd="15dp"
+        android:background="@drawable/button_bg"
+        android:minHeight="0dp"
+        android:paddingBottom="4dp"
+        android:paddingTop="4dp"
+        android:text="@string/edit_profile"
+        android:textAllCaps="false"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@id/imageProfile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="5"
+        app:layout_constraintStart_toEndOf="@id/imageProfile" />
+
+    <com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/alabaster"
+        android:elevation="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/bottom_navigation_menu">
+
+    </com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx>
+
+</android.support.constraint.ConstraintLayout>
