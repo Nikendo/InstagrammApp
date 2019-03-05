@@ -29,22 +29,30 @@ class LoginActivity : AppCompatActivity(), KeyboardVisibilityEventListener, Text
         etEmailInput.addTextChangedListener(this)
         etPasswordInput.addTextChangedListener(this)
         bLogin.setOnClickListener(this)
+        tvCreateAccount.setOnClickListener(this)
 
         mAuth = FirebaseAuth.getInstance()
     }
 
     override fun onClick(v: View) {
-        val email = etEmailInput.text.toString()
-        val password = etPasswordInput.text.toString()
-        if (validate(email, password)) {
-            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
-                if (it.isSuccessful) {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
+        when(v.id) {
+            R.id.bLogin -> {
+                val email = etEmailInput.text.toString()
+                val password = etPasswordInput.text.toString()
+                if (validate(email, password)) {
+                    mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            startActivity(Intent(this, MainActivity::class.java))
+                            finish()
+                        }
+                    }
+                } else {
+                    showToast("Please enter email and password")
                 }
             }
-        } else {
-            showToast("Please enter email and password")
+            R.id.tvCreateAccount -> {
+                startActivity(Intent(this, RegisterActivity::class.java))
+            }
         }
     }
 
