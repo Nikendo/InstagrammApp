@@ -13,8 +13,11 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.android.synthetic.main.fragment_register_email.*
 import kotlinx.android.synthetic.main.fragment_register_namepass.*
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import nikendo.com.instagrammapp.R
 import nikendo.com.instagrammapp.models.User
 
@@ -43,8 +46,18 @@ class RegisterActivity : AppCompatActivity(), EmailFragment.Listener, NamePassFr
     override fun onNext(email: String) {
         if (email.isNotEmpty()) {
             mEmail = email
-            supportFragmentManager.beginTransaction().replace(R.id.frameLayout, NamePassFragment())
-                    .addToBackStack(null).commit()
+            mAuth.fetchSignInMethodsForEmail(email).addOnCompleteListener {
+                if (it.isSuccessful) {
+                    if (it.result.signInMethods?.isEmpty() != false) {
+                        supportFragmentManager.beginTransaction().replace(R.id.frameLayout, NamePassFragment())
+                                .addToBackStack(null).commit()
+                    } else {
+                        showToast("This email already exists")
+                    }
+                } else {
+                    showToast(it.exception!!.message!!)
+                }
+            }
         } else {
             showToast("Please enter email")
         }
@@ -113,6 +126,7 @@ class EmailFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        coordinateBtnAndInputs(bNext, etEmailInput)
         bNext.setOnClickListener {
             val email = etEmailInput.text.toString()
             mListener.onNext(email)
@@ -138,6 +152,7 @@ class NamePassFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        coordinateBtnAndInputs(bRegister, etFullNameInput, etPasswordInput)
         bRegister.setOnClickListener {
             val fullName = etFullNameInput.text.toString()
             val pass = etPasswordInput.text.toString()
