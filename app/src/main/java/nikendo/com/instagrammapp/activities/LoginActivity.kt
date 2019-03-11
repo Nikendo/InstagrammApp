@@ -14,7 +14,7 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import nikendo.com.instagrammapp.R
 
-class LoginActivity : AppCompatActivity(), KeyboardVisibilityEventListener, TextWatcher, View.OnClickListener {
+class LoginActivity : AppCompatActivity(), KeyboardVisibilityEventListener, View.OnClickListener {
 
     private val TAG = "LoginActivity"
     private lateinit var mAuth: FirebaseAuth
@@ -25,46 +25,43 @@ class LoginActivity : AppCompatActivity(), KeyboardVisibilityEventListener, Text
         Log.d(TAG, "onCreate")
 
         KeyboardVisibilityEvent.setEventListener(this, this)
-        bLogin.isEnabled = false
-        etEmailInput.addTextChangedListener(this)
-        etPasswordInput.addTextChangedListener(this)
+        coordinateBtnAndInputs(bLogin, etEmailInput, etPasswordInput)
         bLogin.setOnClickListener(this)
+        tvCreateAccount.setOnClickListener(this)
 
         mAuth = FirebaseAuth.getInstance()
     }
 
     override fun onClick(v: View) {
-        val email = etEmailInput.text.toString()
-        val password = etPasswordInput.text.toString()
-        if (validate(email, password)) {
-            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
-                if (it.isSuccessful) {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
+        when (v.id) {
+            R.id.bLogin -> {
+                val email = etEmailInput.text.toString()
+                val password = etPasswordInput.text.toString()
+                if (validate(email, password)) {
+                    mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            startActivity(Intent(this, MainActivity::class.java))
+                            finish()
+                        }
+                    }
+                } else {
+                    showToast("Please enter email and password")
                 }
             }
-        } else {
-            showToast("Please enter email and password")
+            R.id.tvCreateAccount -> {
+                startActivity(Intent(this, RegisterActivity::class.java))
+            }
         }
     }
 
     override fun onVisibilityChanged(isKeyboardOpen: Boolean) {
         if (isKeyboardOpen) {
-            scrollView.scrollTo(0, scrollView.bottom)
             tvCreateAccount.visibility = View.GONE
         } else {
-            scrollView.scrollTo(0, scrollView.top)
             tvCreateAccount.visibility = View.VISIBLE
         }
     }
 
-    override fun afterTextChanged(s: Editable?) {
-        bLogin.isEnabled = validate(etEmailInput.text.toString(), etPasswordInput.text.toString())
-    }
-
     private fun validate(email: String, password: String) =
             email.isNotEmpty() && password.isNotEmpty()
-
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 }
