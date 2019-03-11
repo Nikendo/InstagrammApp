@@ -50,6 +50,7 @@ class LoginActivity : AppCompatActivity(), KeyboardVisibilityEventListener, View
             }
             R.id.tvCreateAccount -> {
                 startActivity(Intent(this, RegisterActivity::class.java))
+                finish()
             }
         }
     }
