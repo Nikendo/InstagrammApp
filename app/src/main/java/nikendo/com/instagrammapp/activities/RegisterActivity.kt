@@ -10,14 +10,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.android.synthetic.main.fragment_register_email.*
 import kotlinx.android.synthetic.main.fragment_register_namepass.*
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import nikendo.com.instagrammapp.R
 import nikendo.com.instagrammapp.models.User
 
@@ -46,16 +44,12 @@ class RegisterActivity : AppCompatActivity(), EmailFragment.Listener, NamePassFr
     override fun onNext(email: String) {
         if (email.isNotEmpty()) {
             mEmail = email
-            mAuth.fetchSignInMethodsForEmail(email).addOnCompleteListener {
-                if (it.isSuccessful) {
-                    if (it.result.signInMethods?.isEmpty() != false) {
-                        supportFragmentManager.beginTransaction().replace(R.id.frameLayout, NamePassFragment())
-                                .addToBackStack(null).commit()
-                    } else {
-                        showToast("This email already exists")
-                    }
+            mAuth.fetchSignInMethodsForEmail(email) { signInMethods ->
+                if (signInMethods.isEmpty()) {
+                    supportFragmentManager.beginTransaction().replace(R.id.frameLayout, NamePassFragment())
+                            .addToBackStack(null).commit()
                 } else {
-                    showToast(it.exception!!.message!!)
+                    showToast("This email already exists")
                 }
             }
         } else {
@@ -67,22 +61,11 @@ class RegisterActivity : AppCompatActivity(), EmailFragment.Listener, NamePassFr
         if (fullName.isNotEmpty() && pass.isNotEmpty()) {
             val email = mEmail
             if (email != null) {
-                mAuth.createUserWithEmailAndPassword(email, pass)
-                        .addOnCompleteListener {
-                            if (it.isSuccessful) {
-                                val user = mkUser(fullName, email)
-                                val reference = mDatabase.child("users").child(it.result.user.uid)
-                                reference.setValue(user).addOnCompleteListener {
-                                    if (it.isSuccessful) {
-                                        startHomeActivity()
-                                    } else {
-                                        unknowRegisterError(it)
-                                    }
-                                }
-                            } else {
-                                unknowRegisterError(it)
-                            }
-                        }
+                mAuth.createUserWithEmailAndPassword(email, pass) {
+                    mDatabase.createUser(it.user.uid, mkUser(fullName, email)) {
+                        startHomeActivity()
+                    }
+                }
             } else {
                 Log.e(TAG, "onRegister: Email is null")
                 showToast("Please neter email")
@@ -104,12 +87,43 @@ class RegisterActivity : AppCompatActivity(), EmailFragment.Listener, NamePassFr
     }
 
     private fun mkUser(fullName: String, email: String): User {
-        val username = mkUsername(fullName)
-        return User(fullName, username, email = email)
+        return User(fullName, mkUsername(fullName), email = email)
     }
 
     private fun mkUsername(fullName: String): String {
         return fullName.toLowerCase().replace(" ", ".")
+    }
+
+    private fun FirebaseAuth.fetchSignInMethodsForEmail(email: String, onSuccess: (List<String>) -> Unit) {
+        fetchSignInMethodsForEmail(email).addOnCompleteListener {
+            if (it.isSuccessful) {
+                onSuccess(it.result.signInMethods ?: emptyList<String>())
+            } else {
+                showToast(it.exception!!.message!!)
+            }
+        }
+    }
+
+    private fun DatabaseReference.createUser(uid: String, user: User, onSuccess: () -> Unit) {
+        val reference = child("users").child(uid)
+        reference.setValue(user).addOnCompleteListener {
+            if (it.isSuccessful) {
+                onSuccess()
+            } else {
+                unknowRegisterError(it)
+            }
+        }
+    }
+
+    private fun FirebaseAuth.createUserWithEmailAndPassword(email: String, pass: String, onSuccess: (AuthResult) -> Unit) {
+        createUserWithEmailAndPassword(email, pass)
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        onSuccess(it.result)
+                    } else {
+                        unknowRegisterError(it)
+                    }
+                }
     }
 }
 
