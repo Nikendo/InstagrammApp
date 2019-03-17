@@ -1,6 +1,12 @@
 package nikendo.com.instagrammapp
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
+import android.support.v4.content.FileProvider
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.TextView
@@ -10,21 +16,32 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.activity_edit_profile.*
 import kotlinx.android.synthetic.main.activity_edit_profile.view.*
 import nikendo.com.instagrammapp.activities.ValueEventListenerAdapter
 import nikendo.com.instagrammapp.activities.showToast
 import nikendo.com.instagrammapp.models.User
 import nikendo.com.instagrammapp.views.PasswordDialog
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
 
     private val TAG = "EditProfileActivity "
+    private val TAKE_PICTURE_REQUEST_CODE = 1
 
     private lateinit var mAuth: FirebaseAuth
     private lateinit var mDatabase: DatabaseReference
+    private lateinit var mStorage: StorageReference
     private lateinit var mUser: User
     private lateinit var mPendingUser: User
+    private lateinit var mImageUri: Uri
+
+
+    val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,9 +54,12 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
         imageSave.setOnClickListener {
             updateProfile()
         }
-
+        tvChangePhoto.setOnClickListener {
+            takeCameraPicture()
+        }
         mAuth = FirebaseAuth.getInstance()
         mDatabase = FirebaseDatabase.getInstance().reference
+        mStorage = FirebaseStorage.getInstance().reference
 
         mDatabase.child("users").child(mAuth.currentUser!!.uid)
                 .addListenerForSingleValueEvent(ValueEventListenerAdapter {
@@ -52,6 +72,50 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
                     etPhoneInput.setText(mUser.phone, TextView.BufferType.EDITABLE)
                     editProfileToolBar.tvUserName.text = mUser.username
                 })
+    }
+
+    private fun takeCameraPicture() {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (intent.resolveActivity(packageManager) != null) {
+            val imageFile = createImageFile()
+            mImageUri =  FileProvider.getUriForFile(
+                    this,
+                    "nikendo.com.instagrammapp.fileprovider",
+                    imageFile
+            )
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri)
+            startActivityForResult(intent, TAKE_PICTURE_REQUEST_CODE)
+        }
+    }
+
+    private fun createImageFile(): File {
+        return File.createTempFile(
+                "JPEG_${timeStamp}_",
+                ".jpg",
+                getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        )
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == TAKE_PICTURE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val uid = mAuth.currentUser!!.uid
+            // upload image to firebase storage
+            mStorage.child("users/$uid/photo").putFile(mImageUri).addOnCompleteListener {
+                if (it.isSuccessful) {
+                    mDatabase.child("users/$uid/photo").setValue(it.result.uploadSessionUri.toString())
+                            .addOnCompleteListener {
+                                if (it.isSuccessful) {
+                                    Log.d(TAG, "onActivityResult: photo saved successfully")
+                                } else {
+                                    showToast(it.exception!!.message!!)
+                                }
+                            }
+                } else {
+                    showToast(it.exception!!.message!!)
+                }
+            }
+            // save image to database user.photo
+        }
     }
 
     override fun onPasswordConfirm(password: String) {
