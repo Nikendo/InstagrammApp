@@ -8,6 +8,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.support.v4.content.FileProvider
 import android.support.v7.app.AppCompatActivity
+import android.text.Editable
 import android.util.Log
 import android.widget.TextView
 import com.google.firebase.auth.AuthCredential
@@ -21,7 +22,9 @@ import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.activity_edit_profile.*
 import kotlinx.android.synthetic.main.activity_edit_profile.view.*
 import nikendo.com.instagrammapp.activities.ValueEventListenerAdapter
+import nikendo.com.instagrammapp.activities.loadUserPhoto
 import nikendo.com.instagrammapp.activities.showToast
+import nikendo.com.instagrammapp.activities.toStringOrNull
 import nikendo.com.instagrammapp.models.User
 import nikendo.com.instagrammapp.views.PasswordDialog
 import java.io.File
@@ -71,6 +74,8 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
                     etEmailInput.setText(mUser.email, TextView.BufferType.EDITABLE)
                     etPhoneInput.setText(mUser.phone, TextView.BufferType.EDITABLE)
                     editProfileToolBar.tvUserName.text = mUser.username
+                    imageProfile.loadUserPhoto(mUser.photo)
+                    //imageProfile.loadUserPhoto("https://avatars.mds.yandex.net/get-pdb/33827/203472834-toyota-kikai-concept-1467734605.5/s1200")
                 })
     }
 
@@ -78,7 +83,7 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (intent.resolveActivity(packageManager) != null) {
             val imageFile = createImageFile()
-            mImageUri =  FileProvider.getUriForFile(
+            mImageUri = FileProvider.getUriForFile(
                     this,
                     "nikendo.com.instagrammapp.fileprovider",
                     imageFile
@@ -102,10 +107,13 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
             // upload image to firebase storage
             mStorage.child("users/$uid/photo").putFile(mImageUri).addOnCompleteListener {
                 if (it.isSuccessful) {
-                    mDatabase.child("users/$uid/photo").setValue(it.result.uploadSessionUri.toString())
+                    val photoUrl = it.result.downloadUrl.toString()
+                    mDatabase.child("users/$uid/photo").setValue(photoUrl)
                             .addOnCompleteListener {
                                 if (it.isSuccessful) {
-                                    Log.d(TAG, "onActivityResult: photo saved successfully")
+                                    mUser = mUser.copy(phone = photoUrl)
+                                    imageProfile.loadUserPhoto(mUser.photo)
+                                    //imageProfile.loadUserPhoto("https://avatars.mds.yandex.net/get-pdb/33827/203472834-toyota-kikai-concept-1467734605.5/s1200")
                                 } else {
                                     showToast(it.exception!!.message!!)
                                 }
@@ -132,14 +140,7 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
     }
 
     fun updateProfile() {
-        mPendingUser = User(
-                name = etNameInput.text.toString(),
-                username = etUsernameInput.text.toString(),
-                website = etWebsiteInput.text.toString(),
-                bio = etBioInput.text.toString(),
-                email = etEmailInput.text.toString(),
-                phone = etPhoneInput.text.toString()
-        )
+        mPendingUser = readInputs()
         val error = validate(mPendingUser)
         if (error == null) {
             if (mPendingUser.email == mUser.email) {
@@ -152,8 +153,19 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
         }
     }
 
+    private fun readInputs(): User {
+        return User(
+                name = etNameInput.text.toString(),
+                username = etUsernameInput.text.toString(),
+                website = etWebsiteInput.text.toStringOrNull(),
+                bio = etBioInput.text.toStringOrNull(),
+                email = etEmailInput.text.toString(),
+                phone = etPhoneInput.text.toStringOrNull()
+        )
+    }
+
     private fun updateUser(user: User) {
-        val updatesMap = mutableMapOf<String, Any>()
+        val updatesMap = mutableMapOf<String, Any?>()
         if (user.name != mUser.name) updatesMap["name"] = user.name
         if (user.username != mUser.username) updatesMap["username"] = user.username
         if (user.website != mUser.website) updatesMap["website"] = user.website
@@ -186,7 +198,7 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
         }
     }
 
-    private fun DatabaseReference.updateUser(uid: String, updates: Map<String, Any>, onSuccess: () -> Unit) {
+    private fun DatabaseReference.updateUser(uid: String, updates: Map<String, Any?>, onSuccess: () -> Unit) {
         child("users").child(uid).updateChildren(updates)
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
