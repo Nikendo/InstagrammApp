@@ -1,35 +1,38 @@
 package nikendo.com.instagrammapp
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.TextView
-import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.EmailAuthProvider
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_edit_profile.*
 import kotlinx.android.synthetic.main.activity_edit_profile.view.*
-import nikendo.com.instagrammapp.activities.ValueEventListenerAdapter
+import nikendo.com.instagrammapp.activities.loadUserPhoto
 import nikendo.com.instagrammapp.activities.showToast
+import nikendo.com.instagrammapp.activities.toStringOrNull
 import nikendo.com.instagrammapp.models.User
+import nikendo.com.instagrammapp.utils.CameraPictureTaker
+import nikendo.com.instagrammapp.utils.FirebaseHelper
+import nikendo.com.instagrammapp.utils.ValueEventListenerAdapter
 import nikendo.com.instagrammapp.views.PasswordDialog
 
 class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
 
     private val TAG = "EditProfileActivity "
 
-    private lateinit var mAuth: FirebaseAuth
-    private lateinit var mDatabase: DatabaseReference
     private lateinit var mUser: User
     private lateinit var mPendingUser: User
+    private lateinit var mFirebaseHelper: FirebaseHelper
+    private lateinit var cameraPictureTaker: CameraPictureTaker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
         Log.d(TAG, "onCreate")
+
+        cameraPictureTaker = CameraPictureTaker(this)
 
         imageClose.setOnClickListener {
             finish()
@@ -37,28 +40,42 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
         imageSave.setOnClickListener {
             updateProfile()
         }
+        tvChangePhoto.setOnClickListener {
+            cameraPictureTaker.takeCameraPicture()
+        }
+        mFirebaseHelper = FirebaseHelper(this)
 
-        mAuth = FirebaseAuth.getInstance()
-        mDatabase = FirebaseDatabase.getInstance().reference
-
-        mDatabase.child("users").child(mAuth.currentUser!!.uid)
+        mFirebaseHelper.currentUserReference()
                 .addListenerForSingleValueEvent(ValueEventListenerAdapter {
                     mUser = it.getValue(User::class.java)!!
-                    etNameInput.setText(mUser.name, TextView.BufferType.EDITABLE)
-                    etUsernameInput.setText(mUser.username, TextView.BufferType.EDITABLE)
-                    etWebsiteInput.setText(mUser.website, TextView.BufferType.EDITABLE)
-                    etBioInput.setText(mUser.bio, TextView.BufferType.EDITABLE)
-                    etEmailInput.setText(mUser.email, TextView.BufferType.EDITABLE)
-                    etPhoneInput.setText(mUser.phone, TextView.BufferType.EDITABLE)
+                    etNameInput.setText(mUser.name)
+                    etUsernameInput.setText(mUser.username)
+                    etWebsiteInput.setText(mUser.website)
+                    etBioInput.setText(mUser.bio)
+                    etEmailInput.setText(mUser.email)
+                    etPhoneInput.setText(mUser.phone)
                     editProfileToolBar.tvUserName.text = mUser.username
+                    imageProfile.loadUserPhoto(mUser.photo)
                 })
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == cameraPictureTaker.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            mFirebaseHelper.uploadUserPhoto(cameraPictureTaker.imageUri!!) {
+                val photoUrl = it.downloadUrl.toString()
+                mFirebaseHelper.updateUserPhoto(photoUrl) {
+                    mUser = mUser.copy(photo = photoUrl)
+                    imageProfile.loadUserPhoto(mUser.photo)
+                }
+            }
+        }
     }
 
     override fun onPasswordConfirm(password: String) {
         if (password.isNotEmpty()) {
             val credential = EmailAuthProvider.getCredential(mUser.email, password)
-            mAuth.currentUser!!.reauthenticate(credential) {
-                mAuth.currentUser!!.updateEmail(mPendingUser.email) {
+            mFirebaseHelper.reauthenticate(credential) {
+                mFirebaseHelper.updateEmail(mPendingUser.email) {
                     updateUser(mPendingUser)
                 }
             }
@@ -68,14 +85,7 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
     }
 
     fun updateProfile() {
-        mPendingUser = User(
-                name = etNameInput.text.toString(),
-                username = etUsernameInput.text.toString(),
-                website = etWebsiteInput.text.toString(),
-                bio = etBioInput.text.toString(),
-                email = etEmailInput.text.toString(),
-                phone = etPhoneInput.text.toString()
-        )
+        mPendingUser = readInputs()
         val error = validate(mPendingUser)
         if (error == null) {
             if (mPendingUser.email == mUser.email) {
@@ -88,49 +98,29 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
         }
     }
 
+    private fun readInputs(): User {
+        return User(
+                name = etNameInput.text.toString(),
+                username = etUsernameInput.text.toString(),
+                website = etWebsiteInput.text.toStringOrNull(),
+                bio = etBioInput.text.toStringOrNull(),
+                email = etEmailInput.text.toString(),
+                phone = etPhoneInput.text.toStringOrNull()
+        )
+    }
+
     private fun updateUser(user: User) {
-        val updatesMap = mutableMapOf<String, Any>()
+        val updatesMap = mutableMapOf<String, Any?>()
         if (user.name != mUser.name) updatesMap["name"] = user.name
         if (user.username != mUser.username) updatesMap["username"] = user.username
         if (user.website != mUser.website) updatesMap["website"] = user.website
         if (user.bio != mUser.bio) updatesMap["bio"] = user.bio
         if (user.email != mUser.email) updatesMap["email"] = user.email
         if (user.phone != mUser.phone) updatesMap["phone"] = user.phone
-        mDatabase.updateUser(mAuth.currentUser!!.uid, updatesMap) {
+        mFirebaseHelper.updateUser(updatesMap) {
             showToast("Profile saved")
             finish()
         }
-    }
-
-    private fun FirebaseUser.reauthenticate(credential: AuthCredential, onSuccess: () -> Unit) {
-        reauthenticate(credential).addOnCompleteListener {
-            if (it.isSuccessful) {
-                onSuccess()
-            } else {
-                showToast(it.exception!!.message!!)
-            }
-        }
-    }
-
-    private fun FirebaseUser.updateEmail(email: String, onSuccess: () -> Unit) {
-        updateEmail(email).addOnCompleteListener {
-            if (it.isSuccessful) {
-                onSuccess()
-            } else {
-                showToast(it.exception!!.message!!)
-            }
-        }
-    }
-
-    private fun DatabaseReference.updateUser(uid: String, updates: Map<String, Any>, onSuccess: () -> Unit) {
-        child("users").child(uid).updateChildren(updates)
-                .addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        onSuccess()
-                    } else {
-                        showToast(it.exception!!.message!!)
-                    }
-                }
     }
 
     private fun validate(user: User): String? =

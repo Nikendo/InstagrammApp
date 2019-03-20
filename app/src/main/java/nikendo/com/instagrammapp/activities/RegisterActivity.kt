@@ -87,7 +87,7 @@ class RegisterActivity : AppCompatActivity(), EmailFragment.Listener, NamePassFr
     }
 
     private fun mkUser(fullName: String, email: String): User {
-        return User(fullName, mkUsername(fullName), email = email)
+        return User(name = fullName, username = mkUsername(fullName), email = email)
     }
 
     private fun mkUsername(fullName: String): String {
@@ -97,7 +97,7 @@ class RegisterActivity : AppCompatActivity(), EmailFragment.Listener, NamePassFr
     private fun FirebaseAuth.fetchSignInMethodsForEmail(email: String, onSuccess: (List<String>) -> Unit) {
         fetchSignInMethodsForEmail(email).addOnCompleteListener {
             if (it.isSuccessful) {
-                onSuccess(it.result.signInMethods ?: emptyList<String>())
+                onSuccess(it.result!!.signInMethods ?: emptyList<String>())
             } else {
                 showToast(it.exception!!.message!!)
             }
@@ -119,7 +119,7 @@ class RegisterActivity : AppCompatActivity(), EmailFragment.Listener, NamePassFr
         createUserWithEmailAndPassword(email, pass)
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
-                        onSuccess(it.result)
+                        onSuccess(it.result!!)
                     } else {
                         unknowRegisterError(it)
                     }
