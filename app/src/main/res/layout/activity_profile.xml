@@ -38,9 +38,9 @@
         android:id="@+id/imageProfile"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginEnd="15dp"
         android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
         android:src="@drawable/icon_person"
         app:civ_border_color="@color/silver"
         app:civ_border_width="1dp"
@@ -116,12 +116,12 @@
         android:id="@+id/bEditProfile"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
         android:layout_marginEnd="15dp"
+        android:layout_marginBottom="5dp"
         android:background="@drawable/button_bg"
         android:minHeight="0dp"
-        android:paddingBottom="4dp"
         android:paddingTop="4dp"
+        android:paddingBottom="4dp"
         android:text="@string/edit_profile"
         android:textAllCaps="false"
         android:textSize="14sp"
@@ -129,6 +129,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="5"
         app:layout_constraintStart_toEndOf="@id/imageProfile" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvImages"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/top_border_grey"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
+        app:layout_constraintTop_toBottomOf="@id/bEditProfile">
+
+    </android.support.v7.widget.RecyclerView>
 
     <include layout="@layout/bottom_navigation_view" />
 
