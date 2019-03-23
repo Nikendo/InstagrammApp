@@ -3,11 +3,19 @@ package nikendo.com.instagrammapp.activities
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
 import kotlinx.android.synthetic.main.activity_home.*
+import kotlinx.android.synthetic.main.activity_share.view.*
 import nikendo.com.instagrammapp.BaseActivity
 import nikendo.com.instagrammapp.R
 import nikendo.com.instagrammapp.utils.FirebaseHelper
+import nikendo.com.instagrammapp.utils.GlideApp
 import nikendo.com.instagrammapp.utils.ValueEventListenerAdapter
 
 class MainActivity: BaseActivity(0) {
@@ -21,31 +29,50 @@ class MainActivity: BaseActivity(0) {
         setupBottomNavigation()
 
         mFirebase = FirebaseHelper(this)
-        tvSingOut.setOnClickListener{
-            mFirebase.auth.signOut()
-        }
+
         mFirebase.auth.addAuthStateListener {
             if (it.currentUser == null) {
                 startActivity(Intent(this, LoginActivity::class.java))
                 finish()
-            } else {
-                if (mFirebase.auth.currentUser != null) {
-                    mFirebase.database.child("feed-posts").child(mFirebase.auth.currentUser!!.uid)
-                            .addValueEventListener(ValueEventListenerAdapter {
-                                val posts = it.children.map { it.getValue(FeedPost::class.java)!! }
-                                Log.d(TAG, "feedPosts: ${posts.first().timestampDate()}")
-                            })
-                }
             }
         }
+
 
     }
 
     override fun onStart() {
         super.onStart()
-        if (mFirebase.auth.currentUser == null) {
+        val currentUser = mFirebase.auth.currentUser
+        if (currentUser == null) {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
+        } else {
+            mFirebase.database.child("feed-posts").child(currentUser!!.uid)
+                    .addValueEventListener(ValueEventListenerAdapter {
+                        val posts = it.children.map { it.getValue(FeedPost::class.java)!! }
+                        Log.d(TAG, "feedPosts: ${posts.first().timestampDate()}")
+                        rvFeed.adapter = FeedAdapter(posts)
+                        rvFeed.layoutManager = LinearLayoutManager(this)
+                    })
         }
     }
+}
+
+class FeedAdapter(val posts: List<FeedPost>): RecyclerView.Adapter<FeedAdapter.ViewHolder>() {
+    class ViewHolder(val view: View): RecyclerView.ViewHolder(view)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.feed_item, parent, false)
+        return ViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.view.ivPost.loadImage(posts[position].image)
+    }
+
+    private fun ImageView.loadImage(image: String) {
+        GlideApp.with(this).load(image).centerCrop().into(this)
+    }
+
+    override fun getItemCount(): Int = posts.size
 }
