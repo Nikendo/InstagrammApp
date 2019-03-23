@@ -12,39 +12,19 @@ import com.google.firebase.storage.UploadTask
 import nikendo.com.instagrammapp.activities.showToast
 
 class FirebaseHelper(private val activity: Activity) {
-
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
     val database: DatabaseReference = FirebaseDatabase.getInstance().reference
     val storage: StorageReference = FirebaseStorage.getInstance().reference
 
-    fun reauthenticate(credential: AuthCredential, onSuccess: () -> Unit) {
-        auth.currentUser!!.reauthenticate(credential).addOnCompleteListener {
-            if (it.isSuccessful) {
-                onSuccess()
-            } else {
-                activity.showToast(it.exception!!.message!!)
-            }
-        }
-    }
-
-    fun updateEmail(email: String, onSuccess: () -> Unit) {
-        auth.currentUser!!.updateEmail(email).addOnCompleteListener {
-            if (it.isSuccessful) {
-                onSuccess()
-            } else {
-                activity.showToast(it.exception!!.message!!)
-            }
-        }
-    }
-
     fun uploadUserPhoto(photo: Uri, onSuccess: (UploadTask.TaskSnapshot) -> Unit) {
-        storage.child("users/${auth.currentUser!!.uid}/photo").putFile(photo).addOnCompleteListener {
-            if (it.isSuccessful) {
-                onSuccess(it.result)
-            } else {
-                activity.showToast(it.exception!!.message!!)
-            }
-        }
+        storage.child("users/${auth.currentUser!!.uid}/photo").putFile(photo)
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        onSuccess(it.result)
+                    } else {
+                        activity.showToast(it.exception!!.message!!)
+                    }
+                }
     }
 
     fun updateUserPhoto(photoUrl: String, onSuccess: () -> Unit) {
@@ -67,6 +47,26 @@ class FirebaseHelper(private val activity: Activity) {
                         activity.showToast(it.exception!!.message!!)
                     }
                 }
+    }
+
+    fun updateEmail(email: String, onSuccess: () -> Unit) {
+        auth.currentUser!!.updateEmail(email).addOnCompleteListener {
+            if (it.isSuccessful) {
+                onSuccess()
+            } else {
+                activity.showToast(it.exception!!.message!!)
+            }
+        }
+    }
+
+    fun reauthenticate(credential: AuthCredential, onSuccess: () -> Unit) {
+        auth.currentUser!!.reauthenticate(credential).addOnCompleteListener {
+            if (it.isSuccessful) {
+                onSuccess()
+            } else {
+                activity.showToast(it.exception!!.message!!)
+            }
+        }
     }
 
     fun currentUserReference(): DatabaseReference =

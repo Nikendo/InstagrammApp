@@ -4,18 +4,23 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import com.google.firebase.database.ServerValue
 import kotlinx.android.synthetic.main.activity_share.*
 import nikendo.com.instagrammapp.BaseActivity
 import nikendo.com.instagrammapp.R
+import nikendo.com.instagrammapp.models.User
 import nikendo.com.instagrammapp.utils.CameraHelper
 import nikendo.com.instagrammapp.utils.FirebaseHelper
 import nikendo.com.instagrammapp.utils.GlideApp
+import nikendo.com.instagrammapp.utils.ValueEventListenerAdapter
+import java.util.*
 
 class ShareActivity : BaseActivity(2) {
 
     private val TAG = "ShareActivity"
     private lateinit var mCamera: CameraHelper
     private lateinit var mFirebase: FirebaseHelper
+    private lateinit var mUser: User
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +33,10 @@ class ShareActivity : BaseActivity(2) {
 
         ivBack.setOnClickListener { finish() }
         tvShare.setOnClickListener { share() }
+
+        mFirebase.currentUserReference().addValueEventListener(ValueEventListenerAdapter {
+            mUser = it.getValue(User::class.java)!!
+        })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -43,18 +52,24 @@ class ShareActivity : BaseActivity(2) {
     private fun share() {
         val imageUri = mCamera.imageUri
         if (mCamera.imageUri != null) {
-            // upload image to user folder <- storage
             val uid = mFirebase.auth.currentUser!!.uid
-            mFirebase.storage.child("users").child(uid)
-                    .child("images").child(imageUri!!.lastPathSegment).putFile(imageUri)
-                    .addOnCompleteListener {
+            mFirebase.storage.child("users").child(uid).child("images")
+                    .child(imageUri!!.lastPathSegment).putFile(imageUri).addOnCompleteListener {
                         if (it.isSuccessful) {
+                            val imageDownloadUrl = it.result.downloadUrl.toString()
                             mFirebase.database.child("images").child(uid).push()
-                                    .setValue(it.result.downloadUrl.toString())
+                                    .setValue(imageDownloadUrl)
                                     .addOnCompleteListener {
                                         if (it.isSuccessful) {
-                                            startActivity(Intent(this, ProfileActivity::class.java))
-                                            finish()
+                                            mFirebase.database.child("feed-posts").child(uid)
+                                                    .push()
+                                                    .setValue(makeFeedPost(uid, imageDownloadUrl))
+                                                    .addOnCompleteListener {
+                                                        if (it.isSuccessful) {
+                                                            startActivity(Intent(this, ProfileActivity::class.java))
+                                                            finish()
+                                                        }
+                                                    }
                                         } else {
                                             showToast(it.exception!!.message!!)
                                         }
@@ -63,7 +78,27 @@ class ShareActivity : BaseActivity(2) {
                             showToast(it.exception!!.message!!)
                         }
                     }
-            // add image to user images <- db
         }
     }
+
+    private fun makeFeedPost(uid: String, imageDownloadUrl: String): FeedPost {
+        return FeedPost(
+                uid = uid,
+                username = mUser.username,
+                image = imageDownloadUrl,
+                caption = etCaption.text.toString(),
+                photo = mUser.photo
+        )
+    }
 }
+
+data class FeedPost(val uid: String = "", val username: String = "",
+                    val image: String = "", val likesCount: Int = 0, val commentsCount: Int = 0,
+                    val caption: String = "", val comments: List<Comment> = emptyList(),
+                    val timestamp: Any = ServerValue.TIMESTAMP, val photo: String? = null) {
+    fun timestampDate(): Date = Date(timestamp as Long)
+}
+
+data class Comment(val uid: String,
+                   val username: String,
+                   val text: String)

@@ -2,16 +2,17 @@ package nikendo.com.instagrammapp.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_home.*
 import nikendo.com.instagrammapp.BaseActivity
 import nikendo.com.instagrammapp.R
+import nikendo.com.instagrammapp.utils.FirebaseHelper
+import nikendo.com.instagrammapp.utils.ValueEventListenerAdapter
 
-class MainActivity : BaseActivity(0) {
-
+class MainActivity: BaseActivity(0) {
     private val TAG = "MainActivity"
-    private lateinit var mAuth: FirebaseAuth
+    private lateinit var mFirebase: FirebaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,33 +20,32 @@ class MainActivity : BaseActivity(0) {
         Log.d(TAG, "onCreate")
         setupBottomNavigation()
 
-        mAuth = FirebaseAuth.getInstance()
-//        auth.signInWithEmailAndPassword("pravdomir42@gmail.com", "UAZ3303Fire")
-//                .addOnCompleteListener {
-//                    if (it.isSuccessful) {
-//                        Log.d(TAG, "signIn: success")
-//                    } else {
-//                        Log.e(TAG, "signIn: failure", it.exception)
-//                    }
-//                }
-
+        mFirebase = FirebaseHelper(this)
         tvSingOut.setOnClickListener{
-            mAuth.signOut()
+            mFirebase.auth.signOut()
         }
-        mAuth.addAuthStateListener {
+        mFirebase.auth.addAuthStateListener {
             if (it.currentUser == null) {
                 startActivity(Intent(this, LoginActivity::class.java))
                 finish()
+            } else {
+                if (mFirebase.auth.currentUser != null) {
+                    mFirebase.database.child("feed-posts").child(mFirebase.auth.currentUser!!.uid)
+                            .addValueEventListener(ValueEventListenerAdapter {
+                                val posts = it.children.map { it.getValue(FeedPost::class.java)!! }
+                                Log.d(TAG, "feedPosts: ${posts.first().timestampDate()}")
+                            })
+                }
             }
         }
+
     }
 
     override fun onStart() {
         super.onStart()
-        if (mAuth.currentUser == null) {
+        if (mFirebase.auth.currentUser == null) {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
     }
-
 }
