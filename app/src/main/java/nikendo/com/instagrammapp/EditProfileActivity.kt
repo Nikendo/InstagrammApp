@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.widget.TextView
 import com.google.firebase.auth.EmailAuthProvider
 import kotlinx.android.synthetic.main.activity_edit_profile.*
 import kotlinx.android.synthetic.main.activity_edit_profile.view.*
@@ -13,7 +12,7 @@ import nikendo.com.instagrammapp.activities.loadUserPhoto
 import nikendo.com.instagrammapp.activities.showToast
 import nikendo.com.instagrammapp.activities.toStringOrNull
 import nikendo.com.instagrammapp.models.User
-import nikendo.com.instagrammapp.utils.CameraPictureTaker
+import nikendo.com.instagrammapp.utils.CameraHelper
 import nikendo.com.instagrammapp.utils.FirebaseHelper
 import nikendo.com.instagrammapp.utils.ValueEventListenerAdapter
 import nikendo.com.instagrammapp.views.PasswordDialog
@@ -24,15 +23,15 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
 
     private lateinit var mUser: User
     private lateinit var mPendingUser: User
-    private lateinit var mFirebaseHelper: FirebaseHelper
-    private lateinit var cameraPictureTaker: CameraPictureTaker
+    private lateinit var mFirebase: FirebaseHelper
+    private lateinit var mCamera: CameraHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
         Log.d(TAG, "onCreate")
 
-        cameraPictureTaker = CameraPictureTaker(this)
+        mCamera = CameraHelper(this)
 
         imageClose.setOnClickListener {
             finish()
@@ -41,11 +40,11 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
             updateProfile()
         }
         tvChangePhoto.setOnClickListener {
-            cameraPictureTaker.takeCameraPicture()
+            mCamera.takeCameraPicture()
         }
-        mFirebaseHelper = FirebaseHelper(this)
+        mFirebase = FirebaseHelper(this)
 
-        mFirebaseHelper.currentUserReference()
+        mFirebase.currentUserReference()
                 .addListenerForSingleValueEvent(ValueEventListenerAdapter {
                     mUser = it.getValue(User::class.java)!!
                     etNameInput.setText(mUser.name)
@@ -60,10 +59,10 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == cameraPictureTaker.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            mFirebaseHelper.uploadUserPhoto(cameraPictureTaker.imageUri!!) {
+        if (requestCode == mCamera.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            mFirebase.uploadUserPhoto(mCamera.imageUri!!) {
                 val photoUrl = it.downloadUrl.toString()
-                mFirebaseHelper.updateUserPhoto(photoUrl) {
+                mFirebase.updateUserPhoto(photoUrl) {
                     mUser = mUser.copy(photo = photoUrl)
                     imageProfile.loadUserPhoto(mUser.photo)
                 }
@@ -74,8 +73,8 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
     override fun onPasswordConfirm(password: String) {
         if (password.isNotEmpty()) {
             val credential = EmailAuthProvider.getCredential(mUser.email, password)
-            mFirebaseHelper.reauthenticate(credential) {
-                mFirebaseHelper.updateEmail(mPendingUser.email) {
+            mFirebase.reauthenticate(credential) {
+                mFirebase.updateEmail(mPendingUser.email) {
                     updateUser(mPendingUser)
                 }
             }
@@ -117,7 +116,7 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
         if (user.bio != mUser.bio) updatesMap["bio"] = user.bio
         if (user.email != mUser.email) updatesMap["email"] = user.email
         if (user.phone != mUser.phone) updatesMap["phone"] = user.phone
-        mFirebaseHelper.updateUser(updatesMap) {
+        mFirebase.updateUser(updatesMap) {
             showToast("Profile saved")
             finish()
         }

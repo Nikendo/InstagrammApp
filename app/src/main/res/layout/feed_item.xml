@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/userPhotoImage"
+        style="@style/icon"
+        android:layout_width="@dimen/toolbar_height"
+        android:layout_height="@dimen/toolbar_height"
+        android:src="@drawable/icon_person"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvUsename"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="willSmith"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@id/userPhotoImage"
+        app:layout_constraintStart_toEndOf="@id/userPhotoImage"
+        app:layout_constraintTop_toTopOf="@id/userPhotoImage" />
+
+    <ImageView
+        android:id="@+id/ivMore"
+        style="@style/icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_more"
+        app:layout_constraintBottom_toBottomOf="@id/userPhotoImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/userPhotoImage" />
+
+    <ImageView
+        android:id="@+id/ivPost"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/image_placeholder"
+        app:layout_constraintBottom_toTopOf="@id/ivLike"
+        app:layout_constraintTop_toBottomOf="@id/userPhotoImage" />
+
+    <ImageView
+        android:id="@+id/ivLike"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:padding="10dp"
+        android:src="@drawable/ic_likes_border"
+        app:layout_constraintBottom_toTopOf="@id/tvLikes"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivPost" />
+
+    <ImageView
+        android:id="@+id/ivComment"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:padding="10dp"
+        android:src="@drawable/ic_comments_border"
+        app:layout_constraintBottom_toBottomOf="@id/ivLike"
+        app:layout_constraintStart_toEndOf="@id/ivLike"
+        app:layout_constraintTop_toTopOf="@id/ivLike" />
+
+    <ImageView
+        android:id="@+id/ivShare"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:padding="10dp"
+        android:src="@drawable/ic_share_border"
+        app:layout_constraintBottom_toBottomOf="@id/ivLike"
+        app:layout_constraintStart_toEndOf="@id/ivComment"
+        app:layout_constraintTop_toTopOf="@id/ivLike" />
+
+    <TextView
+        android:id="@+id/tvLikes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="820,123 likes"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/tvCaption"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivLike" />
+
+    <TextView
+        android:id="@+id/tvCaption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:text="willSmith This is a caption for the post. It's actually a very long caption."
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvLikes" />
+
+</android.support.constraint.ConstraintLayout>

@@ -12,43 +12,23 @@ import com.google.firebase.storage.UploadTask
 import nikendo.com.instagrammapp.activities.showToast
 
 class FirebaseHelper(private val activity: Activity) {
-
-    private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val mDatabase: DatabaseReference = FirebaseDatabase.getInstance().reference
-    private val mStorage: StorageReference = FirebaseStorage.getInstance().reference
-
-    fun reauthenticate(credential: AuthCredential, onSuccess: () -> Unit) {
-        mAuth.currentUser!!.reauthenticate(credential).addOnCompleteListener {
-            if (it.isSuccessful) {
-                onSuccess()
-            } else {
-                activity.showToast(it.exception!!.message!!)
-            }
-        }
-    }
-
-    fun updateEmail(email: String, onSuccess: () -> Unit) {
-        mAuth.currentUser!!.updateEmail(email).addOnCompleteListener {
-            if (it.isSuccessful) {
-                onSuccess()
-            } else {
-                activity.showToast(it.exception!!.message!!)
-            }
-        }
-    }
+    val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    val database: DatabaseReference = FirebaseDatabase.getInstance().reference
+    val storage: StorageReference = FirebaseStorage.getInstance().reference
 
     fun uploadUserPhoto(photo: Uri, onSuccess: (UploadTask.TaskSnapshot) -> Unit) {
-        mStorage.child("users/${mAuth.currentUser!!.uid}/photo").putFile(photo).addOnCompleteListener {
-            if (it.isSuccessful) {
-                onSuccess(it.result)
-            } else {
-                activity.showToast(it.exception!!.message!!)
-            }
-        }
+        storage.child("users/${auth.currentUser!!.uid}/photo").putFile(photo)
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        onSuccess(it.result)
+                    } else {
+                        activity.showToast(it.exception!!.message!!)
+                    }
+                }
     }
 
     fun updateUserPhoto(photoUrl: String, onSuccess: () -> Unit) {
-        mDatabase.child("users/${mAuth.currentUser!!.uid}/photo").setValue(photoUrl)
+        database.child("users/${auth.currentUser!!.uid}/photo").setValue(photoUrl)
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
                         onSuccess()
@@ -59,7 +39,7 @@ class FirebaseHelper(private val activity: Activity) {
     }
 
     fun updateUser(updates: Map<String, Any?>, onSuccess: () -> Unit) {
-        mDatabase.child("users").child(mAuth.currentUser!!.uid).updateChildren(updates)
+        database.child("users").child(auth.currentUser!!.uid).updateChildren(updates)
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
                         onSuccess()
@@ -69,6 +49,26 @@ class FirebaseHelper(private val activity: Activity) {
                 }
     }
 
+    fun updateEmail(email: String, onSuccess: () -> Unit) {
+        auth.currentUser!!.updateEmail(email).addOnCompleteListener {
+            if (it.isSuccessful) {
+                onSuccess()
+            } else {
+                activity.showToast(it.exception!!.message!!)
+            }
+        }
+    }
+
+    fun reauthenticate(credential: AuthCredential, onSuccess: () -> Unit) {
+        auth.currentUser!!.reauthenticate(credential).addOnCompleteListener {
+            if (it.isSuccessful) {
+                onSuccess()
+            } else {
+                activity.showToast(it.exception!!.message!!)
+            }
+        }
+    }
+
     fun currentUserReference(): DatabaseReference =
-            mDatabase.child("users").child(mAuth.currentUser!!.uid)
+            database.child("users").child(auth.currentUser!!.uid)
 }
