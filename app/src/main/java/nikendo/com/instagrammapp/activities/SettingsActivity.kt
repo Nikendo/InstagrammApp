@@ -19,6 +19,7 @@ class SettingsActivity: AppCompatActivity() {
         ivSignOut.setOnClickListener {
             mFirebase.auth.signOut()
         }
+        ivBack.setOnClickListener { onBackPressed() }
 
         mFirebase = FirebaseHelper(this)
     }

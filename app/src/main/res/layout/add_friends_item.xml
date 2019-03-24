@@ -6,7 +6,7 @@
     android:paddingStart="10dp"
     android:paddingEnd="10dp">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ivUserPhoto"
         android:layout_width="50dp"
         android:layout_height="50dp"
@@ -23,10 +23,10 @@
         android:text="josef.blum"
         android:textColor="@color/black"
         android:textStyle="bold"
-        app:layout_constraintVertical_bias="0.2"
         app:layout_constraintBottom_toBottomOf="@id/ivUserPhoto"
         app:layout_constraintStart_toEndOf="@id/ivUserPhoto"
-        app:layout_constraintTop_toTopOf="@id/ivUserPhoto" />
+        app:layout_constraintTop_toTopOf="@id/ivUserPhoto"
+        app:layout_constraintVertical_bias="0.2" />
 
     <TextView
         android:id="@+id/tvName"
@@ -38,16 +38,19 @@
 
     <Button
         android:id="@+id/btnFollow"
+        style="@style/small_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Follow"
-        android:minHeight="0dp"
-        android:minWidth="0dp"
-        android:paddingTop="3dp"
-        android:paddingBottom="3dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        style="@style/small_btn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tvUsername"/>
+        app:layout_constraintTop_toTopOf="@id/tvUsername" />
+
+    <Button
+        android:id="@+id/btnUnfollow"
+        style="@style/secondary_small_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Follow"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvUsername" />
 </android.support.constraint.ConstraintLayout>
