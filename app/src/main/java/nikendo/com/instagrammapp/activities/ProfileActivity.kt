@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import kotlinx.android.synthetic.main.activity_profile.*
 import nikendo.com.instagrammapp.BaseActivity
-import nikendo.com.instagrammapp.EditProfileActivity
 import nikendo.com.instagrammapp.R
 import nikendo.com.instagrammapp.models.User
 import nikendo.com.instagrammapp.utils.FirebaseHelper
@@ -35,7 +34,14 @@ class ProfileActivity : BaseActivity(4) {
             val intent = Intent(this, EditProfileActivity::class.java)
             startActivity(intent)
         }
-
+        ivSettings.setOnClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
+        }
+        ivAddFriends.setOnClickListener {
+            val intent = Intent(this, AddFriendsActivity::class.java)
+            startActivity(intent)
+        }
         mFirebase = FirebaseHelper(this)
         mFirebase.currentUserReference().addValueEventListener(ValueEventListenerAdapter {
             mUser = it.getValue(User::class.java)!!

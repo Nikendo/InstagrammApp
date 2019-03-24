@@ -61,7 +61,6 @@ class MainActivity : BaseActivity(0) {
             mFirebase.database.child("feed-posts").child(currentUser!!.uid)
                     .addValueEventListener(ValueEventListenerAdapter {
                         val posts = it.children.map { it.getValue(FeedPost::class.java)!! }
-                        Log.d(TAG, "feedPosts: ${posts.first().timestampDate()}")
                         rvFeed.adapter = FeedAdapter(posts)
                         rvFeed.layoutManager = LinearLayoutManager(this)
                     })
