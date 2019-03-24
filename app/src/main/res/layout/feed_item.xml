@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/userPhotoImage"
         style="@style/icon"
         android:layout_width="@dimen/toolbar_height"
@@ -88,9 +88,11 @@
         android:id="@+id/tvCaption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
         android:text="willSmith This is a caption for the post. It's actually a very long caption."
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@id/tvLikes"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvLikes" />
 
 </android.support.constraint.ConstraintLayout>
