@@ -1,4 +1,4 @@
-package nikendo.com.instagrammapp
+package nikendo.com.instagrammapp.activities
 
 import android.app.Activity
 import android.content.Intent
@@ -8,9 +8,7 @@ import android.util.Log
 import com.google.firebase.auth.EmailAuthProvider
 import kotlinx.android.synthetic.main.activity_edit_profile.*
 import kotlinx.android.synthetic.main.activity_edit_profile.view.*
-import nikendo.com.instagrammapp.activities.loadUserPhoto
-import nikendo.com.instagrammapp.activities.showToast
-import nikendo.com.instagrammapp.activities.toStringOrNull
+import nikendo.com.instagrammapp.R
 import nikendo.com.instagrammapp.models.User
 import nikendo.com.instagrammapp.utils.CameraHelper
 import nikendo.com.instagrammapp.utils.FirebaseHelper
@@ -46,14 +44,14 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
 
         mFirebase.currentUserReference()
                 .addListenerForSingleValueEvent(ValueEventListenerAdapter {
-                    mUser = it.getValue(User::class.java)!!
+                    mUser = it.asUser()!!
                     etNameInput.setText(mUser.name)
                     etUsernameInput.setText(mUser.username)
                     etWebsiteInput.setText(mUser.website)
                     etBioInput.setText(mUser.bio)
                     etEmailInput.setText(mUser.email)
                     etPhoneInput.setText(mUser.phone)
-                    editProfileToolBar.tvUserName.text = mUser.username
+                    settingsProfileToolBar.tvUserName.text = mUser.username
                     imageProfile.loadUserPhoto(mUser.photo)
                 })
     }

@@ -35,7 +35,7 @@ class ShareActivity : BaseActivity(2) {
         tvShare.setOnClickListener { share() }
 
         mFirebase.currentUserReference().addValueEventListener(ValueEventListenerAdapter {
-            mUser = it.getValue(User::class.java)!!
+            mUser = it.asUser()!!
         })
     }
 
