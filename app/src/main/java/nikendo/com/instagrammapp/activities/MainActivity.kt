@@ -61,6 +61,7 @@ class MainActivity : BaseActivity(0) {
             mFirebase.database.child("feed-posts").child(currentUser!!.uid)
                     .addValueEventListener(ValueEventListenerAdapter {
                         val posts = it.children.map { it.getValue(FeedPost::class.java)!! }
+                                .sortedByDescending { it.timestampDate() }
                         rvFeed.adapter = FeedAdapter(posts)
                         rvFeed.layoutManager = LinearLayoutManager(this)
                     })
@@ -83,9 +84,9 @@ class FeedAdapter(private val posts: List<FeedPost>)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val post = posts[position]
         with(holder) {
-            view.userPhotoImage.loadImage(post.photo)
+            view.userPhotoImage.loadUserPhoto(post.photo)
             view.tvUsename.text = post.username
-            view.ivPost.loadImage(post.image)
+            view.ivPost.loadUserPhoto(post.image)
             if (post.likesCount == 0) {
                 view.tvLikes.visibility = View.GONE
             } else {

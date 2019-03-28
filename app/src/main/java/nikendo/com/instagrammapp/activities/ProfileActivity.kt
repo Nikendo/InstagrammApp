@@ -44,7 +44,7 @@ class ProfileActivity : BaseActivity(4) {
         }
         mFirebase = FirebaseHelper(this)
         mFirebase.currentUserReference().addValueEventListener(ValueEventListenerAdapter {
-            mUser = it.getValue(User::class.java)!!
+            mUser = it.asUser()!!
             imageProfile.loadUserPhoto(mUser.photo)
             tvUserName.text = mUser.username
         })
@@ -68,7 +68,7 @@ class ImagesAdapter(private val images: List<String>) : RecyclerView.Adapter<Ima
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.image.loadImage(images[position])
+        holder.image.loadUserPhoto(images[position])
     }
 
     override fun getItemCount(): Int = images.size
