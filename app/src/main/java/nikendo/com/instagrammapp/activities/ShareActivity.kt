@@ -4,16 +4,15 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import com.google.firebase.database.ServerValue
 import kotlinx.android.synthetic.main.activity_share.*
 import nikendo.com.instagrammapp.BaseActivity
 import nikendo.com.instagrammapp.R
+import nikendo.com.instagrammapp.models.FeedPost
 import nikendo.com.instagrammapp.models.User
 import nikendo.com.instagrammapp.utils.CameraHelper
 import nikendo.com.instagrammapp.utils.FirebaseHelper
 import nikendo.com.instagrammapp.utils.GlideApp
 import nikendo.com.instagrammapp.utils.ValueEventListenerAdapter
-import java.util.*
 
 class ShareActivity : BaseActivity(2) {
 
@@ -91,14 +90,3 @@ class ShareActivity : BaseActivity(2) {
         )
     }
 }
-
-data class FeedPost(val uid: String = "", val username: String = "",
-                    val image: String = "", val likesCount: Int = 0, val commentsCount: Int = 0,
-                    val caption: String = "", val comments: List<Comment> = emptyList(),
-                    val timestamp: Any = ServerValue.TIMESTAMP, val photo: String? = null) {
-    fun timestampDate(): Date = Date(timestamp as Long)
-}
-
-data class Comment(val uid: String,
-                   val username: String,
-                   val text: String)
